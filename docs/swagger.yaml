@@ -1,0 +1,560 @@
+basePath: /
+definitions:
+  domain.Aluno:
+    properties:
+      cod_curso:
+        type: integer
+      cpf:
+        type: string
+      data_nascimento:
+        type: string
+      email_institucional:
+        type: string
+      email_pessoal:
+        type: string
+      matricula:
+        type: string
+      nacionalidade:
+        type: string
+      nome_completo:
+        type: string
+      semestre_ingresso:
+        type: string
+    type: object
+  domain.Curso:
+    properties:
+      cod_curso:
+        type: integer
+      cod_departamento:
+        type: integer
+      nivel_curso:
+        type: string
+      nome_curso:
+        type: string
+      nome_departamento:
+        type: string
+    type: object
+  domain.RegistroInteresse:
+    properties:
+      data_registro_interesse:
+        type: string
+      id_registro_interesse:
+        type: integer
+      id_turma:
+        type: integer
+      matricula_aluno:
+        type: string
+      prioridade_interesse:
+        type: integer
+      status_interesse:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Esta é a API para o projeto de banco de dados, permitindo a gestão
+    de alunos, cursos e o registro de interesse em turmas.
+  title: API do Sistema de Interesse de Matrícula - UnB
+  version: "1.0"
+paths:
+  /alunos:
+    get:
+      consumes:
+      - application/json
+      description: Retorna uma lista com todos os alunos cadastrados no banco de dados
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Aluno'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Lista todos os alunos
+      tags:
+      - Alunos
+    post:
+      consumes:
+      - application/json
+      description: Cria um novo aluno com base nos dados enviados em JSON
+      parameters:
+      - description: Dados do Aluno para Criar
+        in: body
+        name: aluno
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Aluno'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.Aluno'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Cria um novo aluno
+      tags:
+      - Alunos
+  /alunos/{matricula}:
+    delete:
+      consumes:
+      - application/json
+      description: Apaga um aluno do banco de dados com base na sua matrícula
+      parameters:
+      - description: Matrícula do Aluno
+        in: path
+        name: matricula
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Apaga um aluno
+      tags:
+      - Alunos
+    get:
+      consumes:
+      - application/json
+      description: Retorna os detalhes de um único aluno com base na sua matrícula
+      parameters:
+      - description: Matrícula do Aluno
+        in: path
+        name: matricula
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Aluno'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Busca um aluno pela matrícula
+      tags:
+      - Alunos
+    put:
+      consumes:
+      - application/json
+      description: Atualiza os dados de um aluno com base na sua matrícula
+      parameters:
+      - description: Matrícula do Aluno
+        in: path
+        name: matricula
+        required: true
+        type: string
+      - description: Dados do Aluno para Atualizar
+        in: body
+        name: aluno
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Aluno'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Aluno'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Atualiza um aluno existente
+      tags:
+      - Alunos
+  /alunos/{matricula}/foto:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Recebe um arquivo de imagem e o salva para o aluno com a matrícula
+        especificada
+      parameters:
+      - description: Matrícula do Aluno
+        in: path
+        name: matricula
+        required: true
+        type: string
+      - description: Arquivo de foto para upload
+        in: formData
+        name: foto
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Faz o upload de uma foto para um aluno
+      tags:
+      - Alunos
+  /cursos:
+    get:
+      consumes:
+      - application/json
+      description: Retorna uma lista de todos os cursos, incluindo o nome do departamento
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Curso'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Lista todos os cursos
+      tags:
+      - Cursos
+    post:
+      consumes:
+      - application/json
+      description: Cria um novo curso com base nos dados enviados
+      parameters:
+      - description: Dados do Curso para Criar
+        in: body
+        name: curso
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Curso'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.Curso'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Cria um novo curso
+      tags:
+      - Cursos
+  /cursos/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Apaga um curso do banco de dados com base no seu ID
+      parameters:
+      - description: ID do Curso
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Apaga um curso
+      tags:
+      - Cursos
+    get:
+      consumes:
+      - application/json
+      description: Retorna os detalhes de um único curso com base no seu ID
+      parameters:
+      - description: ID do Curso
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Curso'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Busca um curso pelo ID
+      tags:
+      - Cursos
+    put:
+      consumes:
+      - application/json
+      description: Atualiza os dados de um curso com base no seu ID
+      parameters:
+      - description: ID do Curso
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Dados do Curso para Atualizar
+        in: body
+        name: curso
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Curso'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Curso'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Atualiza um curso existente
+      tags:
+      - Cursos
+  /interesses:
+    get:
+      consumes:
+      - application/json
+      description: Retorna uma lista de todos os interesses registrados
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.RegistroInteresse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Lista todos os registros de interesse
+      tags:
+      - Interesses
+    post:
+      consumes:
+      - application/json
+      description: Registra o interesse de um aluno em uma turma
+      parameters:
+      - description: Dados do Interesse
+        in: body
+        name: interesse
+        required: true
+        schema:
+          $ref: '#/definitions/domain.RegistroInteresse'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.RegistroInteresse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Cria um novo registro de interesse
+      tags:
+      - Interesses
+  /interesses/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove o interesse de um aluno em uma turma
+      parameters:
+      - description: ID do Registro de Interesse
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Apaga um registro de interesse
+      tags:
+      - Interesses
+    get:
+      consumes:
+      - application/json
+      description: Retorna os detalhes de um único registro de interesse
+      parameters:
+      - description: ID do Registro de Interesse
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.RegistroInteresse'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Busca um registro de interesse pelo ID
+      tags:
+      - Interesses
+    put:
+      consumes:
+      - application/json
+      description: Atualiza a prioridade ou status de um registro de interesse
+      parameters:
+      - description: ID do Registro de Interesse
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Dados para Atualizar
+        in: body
+        name: interesse
+        required: true
+        schema:
+          $ref: '#/definitions/domain.RegistroInteresse'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.RegistroInteresse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Atualiza um registro de interesse
+      tags:
+      - Interesses
+swagger: "2.0"
