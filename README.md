@@ -20,20 +20,28 @@ O sistema busca mitigar a ansiedade e a incerteza do período de matrícula, for
 O projeto segue uma arquitetura em camadas para garantir a separação de responsabilidades e a manutenibilidade do código.
 
 ```
-/seu-projeto-unb/
-├── /cmd
-│   └── /api
-│       └── main.go       # PONTO DE ENTRADA. Inicia o servidor e conecta as camadas.
+/SIM-UNB/                
+├── .git/
+├── /backend/                
+│   ├── /cmd/api/main.go
+│   ├── /internal/
+│   │   ├── /database/
+│   │   ├── /domain/
+│   │   ├── /handler/
+│   │   └── /repository/
+│   ├── /docs/
+│   ├── go.mod
+│   └── go.sum
 │
-├── /internal             # Onde o código principal do nosso projeto vai morar.
-│   ├── /domain           # Nossos modelos/structs principais (Aluno, Curso, etc.).
-│   ├── /handler          # Camada que lida com requisições e respostas HTTP.
-│   ├── /repository       # Camada que executa todo o código SQL e interage com o BD.
-│   └── /service          # Camada que orquestra a lógica de negócio.
-│
-├── go.mod                # Arquivo que gerencia as dependências do projeto.
-├── go.sum                # Checksum das dependências.
-└── .env.example          # Exemplo de arquivo para variáveis de ambiente (senha do banco).
+└── /documentacao/           
+    ├── /diagramas/
+    │   └── der-unb.drawio
+    ├── /sql/
+    │   ├── criacao_bd.sql
+    │   ├── populacao_bd.sql
+    │   └── view_procedure.sql
+    └── /src/
+        └── foto_exemplo.png
 ```
 
 ## Como Executar o Projeto (Setup)
